@@ -1,0 +1,25 @@
+{
+  "name": "-content-management-systems-",
+  "version": "1.0.0",
+  "description": "mod 12",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Blaker817/-content-management-systems-.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Blaker817/-content-management-systems-/issues"
+  },
+  "homepage": "https://github.com/Blaker817/-content-management-systems-#readme",
+  "dependencies": {
+    "console.table": "^0.10.0",
+    "inquirer": "^8.2.0",
+    "mysql2": "^2.3.3"
+  }
+}
