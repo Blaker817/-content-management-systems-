@@ -1,3 +1,4 @@
+// const mysql2 = require('promise-mysql')
 const mysql2 = require('mysql2')
 const connection = mysql2.createConnection({
     host: "localhost",
@@ -11,11 +12,34 @@ const connection = mysql2.createConnection({
 //       console.log("err", err);
 //     }
 //   );
+  connection.query(
+    "SELECT * FROM role",
+    function (err, results, fields) {
+      console.log("err", err);
+      console.log(results)
+    }
+  );
+async function getDepartments() {
+  const departments=await connection.query(
+    "SELECT * FROM department",
+    function (err, results, fields) {
+      console.log("err", err);
+      return results
+     
+    }
+  );
+  return departments
+}
 //   connection.query(
-//     "SELECT * FROM department",
+//     "INSERT INTO department(id,name) VALUES (5,'mens clothing')",
 //     function (err, results, fields) {
 //       console.log("err", err);
-//       console.log(results)
 //     }
 //   );
-  connection.end()
+//   connection.query(
+//     "INSERT INTO role(id,title,salary,department_id) VALUES (7,'hr',60,12)",
+//     function (err, results, fields) {
+//       console.log("err", err);
+//     }
+//   );
+  module.exports.getDepartments=getDepartments

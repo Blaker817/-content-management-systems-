@@ -1,5 +1,7 @@
 const inquirer = require('inquirer')
-
+const {
+    getDepartments
+}=require('./dbconnect')
 
 
 function addDepartment() {
@@ -93,7 +95,7 @@ function menu() {
 
             ]
         }
-    ]).then(answer => {
+    ]).then(async answer => {
         console.log(answer)
         if (answer.menu === 'add a department') {
             addDepartment()
@@ -103,7 +105,8 @@ function menu() {
             addEmployee()
     }
     else if (answer.menu === 'view all departments'){
-console.log('here')
+const departments=await getDepartments()
+console.log(departments)
     }}
     )
 }
