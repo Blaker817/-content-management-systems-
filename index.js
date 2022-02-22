@@ -4,7 +4,7 @@ const inquirer = require('inquirer')
 const {
     executeQuery
 } = require('./dbconnect')
-
+const getRandomId = function () { return Math.floor(Math.random() * 100000) }
 
 function addDepartment() {
     inquirer.prompt([
@@ -21,10 +21,11 @@ function addDepartment() {
 
         }
     ])
-        .then(async answers => { console.log(answers) 
-        const query = `INSERT INTO department (id, name) VALUES (${answers.departmentId}, "${answers.newDepartment}")`
-        const result = await executeQuery(query)
-        console.log(result)
+        .then(async answers => {
+            console.log(answers)
+            const query = `INSERT INTO department (id, name) VALUES (${answers.departmentId}, "${answers.newDepartment}")`
+            const result = await executeQuery(query)
+            console.log(result)
         })
 
 
@@ -84,11 +85,27 @@ function addEmployee() {
 
         }
     ])
-        .then(answers => { console.log(answers) })
+        .then(async answers => {
+            console.log(answers)
+            const id = getRandomId()
+            const query = `INSERT INTO employee (id,first_name,last_name,role_id,manager_id) VALUES (${id}, "${answers.addFirstName}", "${answers.addLastName}", ${answers.addRole}, ${answers.addManager})`
+            const result = await executeQuery(query)
+            console.log(result)
+
+        })
 
 
 }
-
+async function viewRoles() {
+    const query = "SELECT * FROM role LEFT JOIN department ON role.department_id = department.id"
+    const results = await executeQuery(query)
+    console.table(results)
+}
+async function viewEmployees(){
+    const query = "SELECT * FROM employee e LEFT JOIN role r ON e.role_id = r.id LEFT JOIN department d ON r.department_id = d.id"
+    const results = await executeQuery(query)
+    console.table(results)
+}
 function menu() {
     inquirer.prompt([
         {
@@ -101,11 +118,8 @@ function menu() {
                 'view all employees',
                 'add a department',
                 'add a role',
-                'add an employee,',
+                'add an employee',
                 'update an employee role',
-
-
-
             ]
         }
     ]).then(async answer => {
@@ -114,17 +128,21 @@ function menu() {
             addDepartment()
         } else if (answer.menu === 'add a role') {
             addRole()
-        } else if (answer.menu === 'add a employee') {
+        } else if (answer.menu === 'add an employee') {
             addEmployee()
+        } else if (answer.menu === 'view all roles') {
+            viewRoles()
+        } else if (answer.menu === 'view all employees') {
+            viewEmployees()
         }
         else if (answer.menu === 'view all departments') {
-            const query="SELECT * FROM department"
+            const query = "SELECT * FROM department"
             const departments = await executeQuery(query)
-     
-            
-console.table(
-  departments
-);
+
+
+            console.table(
+                departments
+            );
         }
     }
     )
