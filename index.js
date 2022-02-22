@@ -1,78 +1,91 @@
+const cTable = require('console.table');
 const inquirer = require('inquirer')
+
 const {
-    getDepartments
-}=require('./dbconnect')
+    executeQuery
+} = require('./dbconnect')
 
 
 function addDepartment() {
     inquirer.prompt([
         {
-            type:'input',
-            name:'newDepartment',
-            message:'name of new department'
+            type: 'input',
+            name: 'newDepartment',
+            message: 'name of new department'
+
+        },
+        {
+            type: 'input',
+            name: 'departmentId',
+            message: 'department ID'
 
         }
     ])
-    .then(answers =>{console.log(answers)})
- 
+        .then(async answers => { console.log(answers) 
+        const query = `INSERT INTO department (id, name) VALUES (${answers.departmentId}, "${answers.newDepartment}")`
+        const result = await executeQuery(query)
+        console.log(result)
+        })
+
+
 
 }
 function addRole() {
     inquirer.prompt([
 
         {
-            type:'input',
-            name:'addName',
-            message:'What is the roles name?'
+            type: 'input',
+            name: 'addName',
+            message: 'What is the roles name?'
 
         },
         {
-            type:'input',
-            name:'addSalary',
-            message:'What is your roles salary?'
+            type: 'input',
+            name: 'addSalary',
+            message: 'What is your roles salary?'
 
         },
         {
-            type:'input',
-            name:'addDepartment',
-            message:'What is your roles department?'
+            type: 'input',
+            name: 'addDepartment',
+            message: 'What is your roles department?'
 
         }
     ])
-    .then(answers =>{console.log(answers)})
- 
+        .then(answers => { console.log(answers) })
+
 
 }
 function addEmployee() {
     inquirer.prompt([
 
         {
-            type:'input',
-            name:'addFirstName',
-            message:'What is the employee first name?'
+            type: 'input',
+            name: 'addFirstName',
+            message: 'What is the employee first name?'
 
         },
         {
-            type:'input',
-            name:'addLastName',
-            message:'What is your employee last name?'
+            type: 'input',
+            name: 'addLastName',
+            message: 'What is your employee last name?'
 
         },
         {
-            type:'input',
-            name:'addRole',
-            message:'What is your role?'
+            type: 'input',
+            name: 'addRole',
+            message: 'What is your role?'
 
         },
         {
-            type:'input',
-            name:'addManager',
-            message:'Who is your manager?'
+            type: 'input',
+            name: 'addManager',
+            message: 'Who is your manager?'
 
         }
     ])
-    .then(answers =>{console.log(answers)})
- 
+        .then(answers => { console.log(answers) })
+
 
 }
 
@@ -103,11 +116,17 @@ function menu() {
             addRole()
         } else if (answer.menu === 'add a employee') {
             addEmployee()
+        }
+        else if (answer.menu === 'view all departments') {
+            const query="SELECT * FROM department"
+            const departments = await executeQuery(query)
+     
+            
+console.table(
+  departments
+);
+        }
     }
-    else if (answer.menu === 'view all departments'){
-const departments=await getDepartments()
-console.log(departments)
-    }}
     )
 }
 menu()
