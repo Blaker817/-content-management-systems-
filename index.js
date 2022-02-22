@@ -4,7 +4,7 @@ const inquirer = require('inquirer')
 const {
     executeQuery
 } = require('./dbconnect')
-const getRandomId = function () { return Math.floor(Math.random() * 100000) }
+// const getRandomId = function () { return Math.floor(Math.random() * 100000) }
 
 function addDepartment() {
     inquirer.prompt([
@@ -13,19 +13,14 @@ function addDepartment() {
             name: 'newDepartment',
             message: 'name of new department'
 
-        },
-        {
-            type: 'input',
-            name: 'departmentId',
-            message: 'department ID'
-
         }
     ])
         .then(async answers => {
             console.log(answers)
-            const query = `INSERT INTO department (id, name) VALUES (${answers.departmentId}, "${answers.newDepartment}")`
+            const query = `INSERT INTO department (name) VALUES ("${answers.newDepartment}")`
             const result = await executeQuery(query)
             console.log(result)
+            menu()
         })
 
 
@@ -37,7 +32,7 @@ function addRole() {
         {
             type: 'input',
             name: 'addName',
-            message: 'What is the roles name?'
+            message: 'What is the roles title?'
 
         },
         {
@@ -49,11 +44,17 @@ function addRole() {
         {
             type: 'input',
             name: 'addDepartment',
-            message: 'What is your roles department?'
+            message: 'What is your roles department id?'
 
         }
     ])
-        .then(answers => { console.log(answers) })
+        .then(async answers => {
+            console.log(answers)
+            const query = `INSERT INTO role (title, salary, department_id) VALUES ("${answers.addName}", "${answers.addSalary}", ${answers.addDepartment})`
+            const result = await executeQuery(query)
+            console.log(result)
+            menu()
+        })
 
 
 }
@@ -75,37 +76,53 @@ function addEmployee() {
         {
             type: 'input',
             name: 'addRole',
-            message: 'What is your role?'
+            message: 'What is your role id?'
 
         },
         {
             type: 'input',
             name: 'addManager',
-            message: 'Who is your manager?'
+            message: 'What is your manager id?'
 
         }
     ])
         .then(async answers => {
             console.log(answers)
-            const id = getRandomId()
-            const query = `INSERT INTO employee (id,first_name,last_name,role_id,manager_id) VALUES (${id}, "${answers.addFirstName}", "${answers.addLastName}", ${answers.addRole}, ${answers.addManager})`
+            const query = `INSERT INTO employee (first_name,last_name,role_id,manager_id) VALUES ("${answers.addFirstName}", "${answers.addLastName}", ${answers.addRole}, ${answers.addManager})`
             const result = await executeQuery(query)
             console.log(result)
-
+            menu()
         })
 
 
 }
 async function viewRoles() {
-    const query = "SELECT * FROM role LEFT JOIN department ON role.department_id = department.id"
+    const query = "SELECT * FROM role;"
     const results = await executeQuery(query)
     console.table(results)
+    menu()
 }
-async function viewEmployees(){
-    const query = "SELECT * FROM employee e LEFT JOIN role r ON e.role_id = r.id LEFT JOIN department d ON r.department_id = d.id"
+async function viewEmployees() {
+    const query = "SELECT * FROM employee;"
     const results = await executeQuery(query)
     console.table(results)
+    menu()
 }
+
+async function viewDepartment() {
+    const query = "SELECT * FROM department;"
+    const results = await executeQuery(query)
+    console.table(results)
+    menu()
+}
+
+async function viewAll() {
+    const query = "SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department on role.department_id = department.id LEFT JOIN employee manager on manager.id = employee.manager_id;"
+    const results = await executeQuery(query)
+    console.table(results)
+    menu()
+}
+
 function menu() {
     inquirer.prompt([
         {
@@ -113,6 +130,7 @@ function menu() {
             name: 'menu',
             message: 'Chose one of the following options',
             choices: [
+                'view all',
                 'view all departments',
                 'view all roles',
                 'view all employees',
@@ -124,7 +142,10 @@ function menu() {
         }
     ]).then(async answer => {
         console.log(answer)
-        if (answer.menu === 'add a department') {
+        if (answer.menu === 'view all') {
+            viewAll()
+        }
+        else if (answer.menu === 'add a department') {
             addDepartment()
         } else if (answer.menu === 'add a role') {
             addRole()
@@ -134,6 +155,8 @@ function menu() {
             viewRoles()
         } else if (answer.menu === 'view all employees') {
             viewEmployees()
+        } else if (answer.menu === 'view all departments') {
+            viewDepartment()
         }
         else if (answer.menu === 'view all departments') {
             const query = "SELECT * FROM department"
